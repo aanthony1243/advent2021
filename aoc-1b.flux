@@ -1,7 +1,7 @@
 import "array"
 import "experimental"
 
-x = array.from(
+array.from(
     rows: [
         {_value: 151},
         {_value: 152},
@@ -2005,27 +2005,16 @@ x = array.from(
         {_value: 8127},
     ],
 )
-
-
-array.from(rows: [{_value: 199},
-{_value: 200},
-{_value: 208},
-{_value: 210},
-{_value: 200},
-{_value: 207},
-{_value: 240},
-{_value: 269},
-{_value: 260},
-{_value: 263}])
 |> experimental.set(o: {_time: 1000000000})
 |> cumulativeSum(columns: ["_time"])
 |> map(fn: (r) => ({r with _time: time(v: r._time - 3000000000), itime: r._time - 3000000000}))
 //
-|> limit(n: 15)
-|> range(start: 0)
+//|> limit(n: 15)
+|> range(start: -10)
 |> window(every: 1s, period: 3s)
-//|> filter(fn: (r) => uint(v:r._stop) > 1000000000)
 |> sum() 
-// |> difference()
-// |> filter(fn: (r) => r._value > 0)
-// |> count() 
+|> filter(fn: (r) => int(v:r._stop) > 0)
+|> group()
+|> difference()
+|> filter(fn: (r) => r._value > 0)
+|> count() 
